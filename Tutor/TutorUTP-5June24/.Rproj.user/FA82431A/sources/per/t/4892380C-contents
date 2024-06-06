@@ -1,0 +1,88 @@
+result = read.csv("Result.csv",na.strings = "",fileEncoding = "UTF-8-BOM")
+result = na.omit(result)
+participant = read.csv("Participant.csv",fileEncoding = "UTF-8-BOM")
+merged = merge(result,participant, by = "Participant.Number")
+
+# 1
+question2 = aggregate(merged$Participant.Number,by = list(merged$Question.2),FUN = length)
+question2x
+percentage = round(question2$x*100/sum(question2$x),1)
+percentage
+pie(percentage,labels = percentage,col = rainbow(5),main = "Result of Question 2 \nAKUAUAUA")
+legend("topright",c("Strongly Disagree","Disagree","Neutral","Agree","Strongly Agree"),fill = rainbow((5)))
+
+# 2
+question6 = merged[merged$Gender == "Female", ]
+question6
+question6 = aggregate(question6$Participant.Number, by = list(question6$Question.6), FUN = length)
+question6
+question6$percentage = round(question6$x*100/sum(question6$x), 1)
+question6
+pie(question6$percentage, labels = question6$percentage, col = c("red", "cyan"))
+legend("topright", c("FALSE", "TRUE"), fill = c("red", "cyan"))
+
+# 3 
+q1male = merged[merged$Gender == "Male",]
+q1female = merged[merged$Gender == "Female",]
+q1male = aggregate(q1male$Participant.Number, by = list(q1male$Question.1), FUN = length)
+q1male
+q1female = aggregate(q1female$Participant.Number, by = list(q1female$Question.1), FUN = length)
+q1female
+q1male = q1male$x
+q1male
+q1female = q1female$x
+q1female
+q1male = t(q1male)
+q1male
+q1female = t(q1female)
+q1female
+
+q1 = rbind(q1female, q1male)
+colnames(q1) = c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree")
+row.names(q1) = c("Female", "Male")
+q1
+barplot(q1, col = c("red", "orange"))
+barplot(q1, beside = FALSE, col = c("red", "orange"))
+legend("topleft", c("Male", "Female"), fill = c("red", "orange"))
+
+# 4
+q1male = merged[merged$Gender == "Male",]
+q1female = merged[merged$Gender == "Female",]
+boxplot(q1male$Question.1)
+boxplot(q1female$Question.1)
+boxplot(merged$Question.1~merged$Gender, col = c("red", "orange"), xlab = "Gender", ylab = "Question 1 Answer")
+
+# 5 
+hist(merged$Question.4, breaks = 5, col = c("red", "orange", "yellow", "green"), xlab = "Question 4 Answer", ylab = "Frequency")
+
+# 6
+q1 = aggregate(merged$Participant.Number, by = list(merged$Question.1), FUN = length)
+q2 = aggregate(merged$Participant.Number, by = list(merged$Question.2), FUN = length)
+q3 = aggregate(merged$Participant.Number, by = list(merged$Question.3), FUN = length)
+q4 = aggregate(merged$Participant.Number, by = list(merged$Question.4), FUN = length)
+q5 = aggregate(merged$Participant.Number, by = list(merged$Question.5), FUN = length)
+
+q1 = cbind(q1$x, q2$x, q3$x, q4$x, q5$x)
+q1
+colnames(q1) = c("Question 1", "Question 2", "Question 3", "Question 4", "Question 5")
+row.names(q1) = c("Answer 1", "Answer 2", "Answer 3", "Answer 4", "Answer 5")
+q1
+barplot(q1, col = rainbow(5), ylim = c(0, 100))
+legend("topright", c("Answer 1, Answer 2", "Answer 3", "Answer 4", "Answer 5"), fill = rainbow(5))
+
+# 7
+day = aggregate(merged$Participant.Number, by = list(merged$Date), FUN = length)
+day = rbind(day, c("7/15/2018", 0))
+day = day[order(day$Group.1, decreasing = FALSE), ]
+day
+date = as.Date(day$Group.1, "%m/%d/%Y")
+date
+plot(day$x, type = "p", xlab = "Survey Date", ylab = "Number of Participant", xaxt = "n")
+axis(1, at = 1:7, date)
+# axis(1, at=1:7, c("2018-07-14", "2018-07-15", "2018-07-16", "2018-07-17", "2018-07-18", "2018-07-19", "2018-07-20"))
+
+png("result.png", width = 1200, height = 800)
+plot(day$x, type = "o", xlab = "Survey Date", ylab = "Number of Participants", xaxt = "n")
+axis(1, at = 1:7, date)
+dev.off()
+#

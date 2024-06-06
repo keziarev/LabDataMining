@@ -1,0 +1,31 @@
+# buat dataset
+data = data.frame(
+  TransactionID = c(
+    1,1,
+    2,2,2,
+    3,3,3,3,
+    4,
+    5,5,
+    6,6,6,
+    7,7,7,7,7
+  ),
+  Item = c(
+    'Milk', 'Bread',
+    'Milk', 'Cola', 'Cracker',
+    'Cola', 'Bread', 'Cracker', 'IceCream',
+    'Cola',
+    'Bread', 'IceCream',
+    'Milk', 'Cracker', 'Cola',
+    'Milk', 'Bread', 'Cola', 'Cracker', 'IceCream'
+  )
+)
+
+# Convert dataframe menjadi object transactions
+transactions <- as(split(data$Item, data$TransactionID),
+                   "transactions")
+inspect(transactions)
+
+write(transactions, file = 'data.csv', sep = ',')
+
+system('cmd', input = 'fpgrowth')
+system('cmd', input = 'fpgrowth -s5 -k, data.csv frequent_itemset.csv')

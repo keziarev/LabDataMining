@@ -1,0 +1,54 @@
+# install arules
+install.packages('arules')
+install.packages("Matrix", type = "binary")
+install.packages("RTools")
+
+# import library arules
+library(arules)
+
+# buat dataset
+data = data.frame(
+  TransactionID = c(
+    1,1,
+    2,2,2,
+    3,3,3,3,
+    4,
+    5,5,
+    6,6,6,
+    7,7,7,7,7
+  ),
+  Item = c(
+    'Milk', 'Bread',
+    'Milk', 'Cola', 'Cracker',
+    'Cola', 'Bread', 'Cracker', 'IceCream',
+    'Cola',
+    'Bread', 'IceCream',
+    'Milk', 'Cracker', 'Cola',
+    'Milk', 'Bread', 'Cola', 'Cracker', 'IceCream'
+  )
+)
+
+# print data
+print(data)
+
+# Convert dataframe menjadi object transactions
+transactions <- as(split(data$Item, data$TransactionID),
+                   "transactions")
+inspect(transactions)
+
+# mencari itemsets
+itemsets <- apriori(transactions, parameter = list(
+  target = "frequent itemsets", supp = 0.1
+))
+
+inspect(itemsets)
+
+itemsets <- apriori(transactions, parameter = list(
+  target = "frequent itemsets", supp = 0.5
+))
+
+inspect(itemsets)
+
+# Association Rules
+rules <- ruleInduction(itemsets, confidence = 0.5)
+inspect(rules)
